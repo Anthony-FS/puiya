@@ -5,5 +5,3 @@ packages:
 allowBuilds:
   lefthook: true
   esbuild: true
-minimumReleaseAgeExclude:
-  - aws-cdk-lib@2.275.0

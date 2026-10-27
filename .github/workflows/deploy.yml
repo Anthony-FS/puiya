@@ -2,6 +2,8 @@ name: Deploy
 
 # Deploys the staging backend after every merge into dev. GitHub gets short-lived AWS
 # credentials through OIDC (no stored keys); see docs/aws-setup.md for the one-time setup.
+# No `environment:` on the job: it would change the OIDC subject from
+# repo:<repo>:ref:refs/heads/dev to repo:<repo>:environment:<name>, which the role does not trust.
 on:
   push:
     branches: [dev]
@@ -21,7 +23,6 @@ jobs:
     if: vars.AWS_DEPLOY_ROLE_ARN != ''
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment: staging
     steps:
       - uses: actions/checkout@v4
 
@@ -53,5 +54,8 @@ jobs:
         working-directory: infra
         run: |
           url=$(node -e "console.log(require('./cdk-outputs.json').PuiyaStaging.HealthUrl)")
-          echo "Health URL: $url"
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$url"
+          # Keep the public URL out of the logs: every call counts against the free tier.
+          echo "::add-mask::$url"
+          # A brand-new function URL can answer 403 for a few seconds while permissions settle.
+          sleep 5
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors "$url"

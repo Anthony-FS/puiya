@@ -6,14 +6,12 @@ import { Architecture, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lamb
 import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs'
 import type { Construct } from 'constructs'
+import { syncIndexName, tableNames } from '../../apps/api/src/data/keys.ts'
 import { capacity, type Stage } from './free-tier.ts'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(here, '../..')
 const apiSrc = path.join(repoRoot, 'apps/api/src')
-
-// Must match apps/api/src/data/keys.ts.
-const SYNC_INDEX = 'bySyncKey'
 
 export type StageStackProps = StackProps & { stage: Stage }
 
@@ -34,7 +32,7 @@ export class StageStack extends Stack {
 
     const makeTable = (name: 'main' | 'people') => {
       const table = new Table(this, name === 'main' ? 'MainTable' : 'PeopleTable', {
-        tableName: `puiya-${stage}-${name}`,
+        tableName: tableNames[name](stage),
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         billingMode: BillingMode.PROVISIONED,
@@ -48,7 +46,7 @@ export class StageStack extends Stack {
         removalPolicy,
       })
       table.addLocalSecondaryIndex({
-        indexName: SYNC_INDEX,
+        indexName: syncIndexName,
         sortKey: { name: 'syncKey', type: AttributeType.STRING },
       })
       return table

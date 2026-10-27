@@ -1,4 +1,4 @@
-import { App, CliCredentialsStackSynthesizer } from 'aws-cdk-lib'
+import { App, LegacyStackSynthesizer } from 'aws-cdk-lib'
 import { AccountStack } from '../lib/account-stack.ts'
 import { StageStack } from '../lib/stage-stack.ts'
 
@@ -17,10 +17,11 @@ new StageStack(app, 'PuiyaProd', { stage: 'prod', env: { account, region: APP_RE
 const alertEmail: string | undefined = app.node.tryGetContext('alertEmail')
 if (alertEmail) {
   new AccountStack(app, 'PuiyaAccount', {
-    // Budgets and IAM are global; us-east-1 supports every resource here. Deployed with the
-    // owner's own credentials, so this stack needs no `cdk bootstrap` and no asset bucket.
+    // Budgets and IAM are global; us-east-1 supports every resource here. The legacy
+    // synthesizer sends the template straight to CloudFormation with the owner's own login,
+    // so this stack needs no `cdk bootstrap` (and no CDK bucket) in us-east-1.
     env: { account, region: 'us-east-1' },
-    synthesizer: new CliCredentialsStackSynthesizer(),
+    synthesizer: new LegacyStackSynthesizer(),
     githubRepo: app.node.tryGetContext('githubRepo') ?? 'Anthony-FS/puiya',
     deployBranches: ['dev', 'main'],
     appRegion: APP_REGION,

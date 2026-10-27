@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseSk, recordSk, shopPk, syncKey, tableNames } from './keys'
+import { assertKindForTable, parseSk, recordSk, shopPk, syncKey, tableNames } from './keys'
 
 const SHOP = '0b9f4a52-5c8e-4c3a-9d55-3f1a2b6c7d8e'
 const ID = '6A1D2E3F-4B5C-4D7E-8F90-A1B2C3D4E5F6'
@@ -33,7 +33,7 @@ describe('recordSk and parseSk', () => {
     expect(() => recordSk('SALE')).toThrow(RangeError)
   })
 
-  it.each(['SALE', 'SALE#', 'SALE#not-a-uuid', `UNKNOWN#${ID}`, `SALE#${ID}#extra`])(
+  it.each(['SALE', 'SALE#', 'SALE#not-a-uuid', `UNKNOWN#${ID}`, `SALE#${ID}#extra`, `META#${ID}`])(
     'rejects malformed sort key %j',
     (sk) => {
       expect(() => parseSk(sk)).toThrow(RangeError)
@@ -49,10 +49,34 @@ describe('syncKey', () => {
     expect([c, a, b].sort()).toEqual([a, b, c])
   })
 
-  it.each(['2026-10-27T06:00:00Z', '2026-10-27 06:00:00.000Z', '2026-10-27T13:00:00.000+07:00'])(
-    'rejects timestamps that would sort wrongly: %j',
-    (updatedAt) => {
-      expect(() => syncKey(updatedAt, 'META')).toThrow(RangeError)
+  it('stores the canonical lower-case sort key', () => {
+    expect(syncKey('2026-10-27T06:00:00.000Z', `SALE#${ID}`)).toBe(
+      `2026-10-27T06:00:00.000Z#SALE#${ID.toLowerCase()}`,
+    )
+  })
+
+  it.each([
+    '2026-10-27T06:00:00Z',
+    '2026-10-27 06:00:00.000Z',
+    '2026-10-27T13:00:00.000+07:00',
+    '2026-13-45T25:61:00.000Z',
+    '2026-02-30T00:00:00.000Z',
+  ])('rejects timestamps that would sort wrongly: %j', (updatedAt) => {
+    expect(() => syncKey(updatedAt, 'META')).toThrow(RangeError)
+  })
+})
+
+describe('assertKindForTable (PDPA separation)', () => {
+  it('keeps customers in the people table only', () => {
+    expect(() => assertKindForTable('people', 'CUSTOMER')).not.toThrow()
+    expect(() => assertKindForTable('main', 'CUSTOMER')).toThrow(RangeError)
+  })
+
+  it.each(['META', 'PRODUCT', 'SALE', 'STOCK', 'CREDIT'] as const)(
+    'keeps %s in the main table only',
+    (kind) => {
+      expect(() => assertKindForTable('main', kind)).not.toThrow()
+      expect(() => assertKindForTable('people', kind)).toThrow(RangeError)
     },
   )
 })

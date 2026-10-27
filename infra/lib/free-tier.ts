@@ -1,7 +1,8 @@
 /**
  * Always-free DynamoDB allowance (ADR 0003): 25 read and 25 write capacity units in total,
  * shared by every provisioned table and index in the account and region. Local secondary
- * indexes share their table's capacity, so they cost nothing extra.
+ * indexes have no capacity of their own, but each write that touches one also uses the table's
+ * write units, so the real write throughput is roughly half the numbers below.
  *
  * Staging and prod each get their own tables, so the per-stage budget is split between them.
  */

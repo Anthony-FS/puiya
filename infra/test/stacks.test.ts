@@ -1,4 +1,5 @@
-import { App } from 'aws-cdk-lib'
+import { readFileSync } from 'node:fs'
+import { App, LegacyStackSynthesizer } from 'aws-cdk-lib'
 import { Match, Template } from 'aws-cdk-lib/assertions'
 import { describe, expect, it } from 'vitest'
 import { AccountStack } from '../lib/account-stack.ts'
@@ -157,14 +158,19 @@ describe('account stack', () => {
     expect(statements).toHaveLength(1)
     expect(statements[0].Action).toBe('sts:AssumeRole')
     expect(JSON.stringify(statements[0].Resource)).toContain(
-      ':role/cdk-*-111111111111-ap-southeast-1',
+      ':role/cdk-hnb659fds-*-role-111111111111-ap-southeast-1',
     )
   })
 
   it('emails the owner on the first cent of spend and on a forecast over $1', () => {
     const t = Template.fromStack(make())
     t.hasResourceProperties('AWS::Budgets::Budget', {
-      Budget: { BudgetLimit: { Amount: 1, Unit: 'USD' }, TimeUnit: 'MONTHLY', BudgetType: 'COST' },
+      Budget: {
+        BudgetLimit: { Amount: 1, Unit: 'USD' },
+        TimeUnit: 'MONTHLY',
+        BudgetType: 'COST',
+        CostTypes: { IncludeCredit: false, IncludeRefund: false },
+      },
       NotificationsWithSubscribers: [
         Match.objectLike({
           Notification: Match.objectLike({ NotificationType: 'ACTUAL', Threshold: 1 }),
@@ -183,5 +189,38 @@ describe('account stack', () => {
     [{ deployBranches: [] as string[] }],
   ])('rejects bad settings %j', (overrides) => {
     expect(() => make(overrides)).toThrow()
+  })
+})
+
+describe('deploy workflow and account stack fit together', () => {
+  const workflow = readFileSync(
+    new URL('../../.github/workflows/deploy.yml', import.meta.url),
+    'utf8',
+  )
+
+  it('sends the OIDC subject the role trusts (no job environment, deploys from dev)', () => {
+    // An `environment:` key changes the subject to repo:<repo>:environment:<name>.
+    expect(workflow).not.toMatch(/^\s+environment:/m)
+    expect(workflow).toMatch(/branches: \[dev\]/)
+    expect(workflow).toContain('id-token: write')
+  })
+
+  it('deploys to the region the role is allowed into', () => {
+    expect(workflow).toContain('aws-region: ap-southeast-1')
+  })
+
+  it('needs no CDK bucket in us-east-1 for the account stack', () => {
+    const app = new App()
+    new AccountStack(app, 'TestAccountLegacy', {
+      env: { account: '111111111111', region: 'us-east-1' },
+      synthesizer: new LegacyStackSynthesizer(),
+      githubRepo: 'Anthony-FS/puiya',
+      deployBranches: ['dev', 'main'],
+      appRegion: 'ap-southeast-1',
+      alertEmail: 'owner@example.com',
+    })
+    const artifact = app.synth().getStackByName('TestAccountLegacy')
+    expect(artifact.stackTemplateAssetObjectUrl).toBeUndefined()
+    expect(artifact.assumeRoleArn).toBeUndefined()
   })
 })

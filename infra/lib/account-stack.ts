@@ -67,7 +67,7 @@ export class AccountStack extends Stack {
         effect: Effect.ALLOW,
         actions: ['sts:AssumeRole'],
         resources: [
-          `arn:${this.partition}:iam::${this.account}:role/cdk-*-${this.account}-${appRegion}`,
+          `arn:${this.partition}:iam::${this.account}:role/cdk-hnb659fds-*-role-${this.account}-${appRegion}`,
         ],
       }),
     )
@@ -78,6 +78,9 @@ export class AccountStack extends Stack {
         budgetType: 'COST',
         timeUnit: 'MONTHLY',
         budgetLimit: { amount: 1, unit: 'USD' },
+        // Count spend before credits: on the Free plan, credits would otherwise hide charges
+        // outside the always-free allowances until the credits ran out.
+        costTypes: { includeCredit: false, includeRefund: false },
       },
       notificationsWithSubscribers: [
         // Any real charge at all (1% of $1 = one cent): something left the free tier.
