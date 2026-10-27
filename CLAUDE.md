@@ -4,6 +4,14 @@ Puiya (ปุ๋ยยา) is a free, offline-first point-of-sale and compliance
 farm-input shops (ร้านปุ๋ย-ยา: fertiliser, pesticide and seed retailers). Revenue comes later
 from aggregated, anonymised sell-out data. Read this file before every task.
 
+## Project plan
+
+The plan (phases, deliverables, exit criteria) is in [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md).
+Live status is in the Puiya Project Plan tracker: https://claude.ai/artifact/GY5kch2BLnf5H7XfZUghSP
+(collection `items`, one document per deliverable, field `status`: `todo` | `doing` | `blocked` | `done`).
+Every branch and PR names its deliverable ID. Mark it `doing` when work starts and `done` when the
+PR merges into `dev`.
+
 ## Roles
 
 - **Product owner and reviewer:** Anthony. Decides what gets built, approves plans, reviews and
