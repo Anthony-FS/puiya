@@ -56,6 +56,12 @@ Unchanged from ADR 0002: TypeScript, pnpm + Turborepo, Expo, Next.js, Zod schema
   phase now starts on 1 Nov 2026.
 - 25 read/write units handle a small pilot comfortably but not heavy bulk imports; the DOA
   catalogue import runs slowly overnight.
+- The sync index is a local secondary index. It needs no capacity of its own, but each write
+  that touches it also uses the table's write units (roughly halving write throughput), it caps
+  each shop's data at 10 GB, and it can't be removed without recreating the table.
+- The server, not the phone, sets `updatedAt` when it accepts a write. A phone with a wrong
+  clock could otherwise write behind another device's sync cursor, and that change would never
+  be pulled.
 - Backups beyond what DynamoDB keeps by default cost money; decide before real shop data
   arrives (P4-02).
 - The Cognito custom-flow approach to LINE sign-in must be proven in P2-05. If those users are
