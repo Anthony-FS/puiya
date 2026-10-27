@@ -7,6 +7,9 @@ This file holds the plan itself: phases, exit criteria and deliverables. Statuse
 the tracker so they never disagree. Change the plan here by pull request, then update the
 tracker to match.
 
+Puiya is a hobby project, so there is no separate discovery phase: building starts straight
+after Foundation, and the pilot is where real shops first try it.
+
 ## How agents use this plan
 
 - Before starting work, find the deliverable it belongs to (e.g. `P2-07`) and name it in the
@@ -20,8 +23,7 @@ tracker to match.
 | Phase                                       | Window                    | Done when                                                                                                                                    |
 | ------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | **P0 Foundation**                           | 27 Oct 2026 – 15 Nov 2026 | Repo on GitHub with protected main and dev, CI green, Claude can open PRs, developer accounts ready.                                         |
-| **P1 Discovery and validation**             | 1 Nov 2026 – 30 Nov 2026  | At least 10 shops agree to pilot, at least 2 input companies interested in sell-out data, DOA data route confirmed, MVP scope locked.        |
-| **P2 MVP build**                            | 1 Dec 2026 – 28 Feb 2027  | A shop can sell offline, track stock and credit, print or LINE a receipt, and sync without losses, tested on a low-end Android phone.        |
+| **P2 MVP build**                            | 1 Nov 2026 – 28 Feb 2027  | A shop can sell offline, track stock and credit, print or LINE a receipt, and sync without losses, tested on a low-end Android phone.        |
 | **P3 Compliance features**                  | 1 Mar 2027 – 31 Mar 2027  | Every fertiliser, pesticide and seed sale is checked against Department of Agriculture registrations, with an inspection-ready sales record. |
 | **P4 Pilot**                                | 1 Apr 2027 – 30 Jun 2027  | 20+ shops weekly active for 8 weeks, at least 70% of their sales recorded in the app, no lost-sale bugs open.                                |
 | **P5 Web dashboard and distributor portal** | 1 Jul 2027 – 31 Aug 2027  | Owners use web reports, and at least 1 distributor takes reorders through Puiya.                                                             |
@@ -46,26 +48,9 @@ _27 Oct 2026 – 15 Nov 2026._ Repository, working rules, tooling and accounts i
 | P0-07 | **Protect main and dev; make dev the default branch** — Require a pull request and passing CI on both branches.                     | Anthony | 31 Oct 2026 |
 | P0-08 | **Developer accounts** — Expo, Google Play Console, LINE Developers, AWS (Bangkok region), Sentry.                                  | Anthony | 15 Nov 2026 |
 
-## P1 — Discovery and validation
-
-_1 Nov 2026 – 30 Nov 2026._ Confirm shops want it, companies will pay for the data, and the registration data can be obtained.
-
-**Done when:** At least 10 shops agree to pilot, at least 2 input companies interested in sell-out data, DOA data route confirmed, MVP scope locked.
-
-| ID    | Deliverable                                                                                                                                              | Owner   | Due         |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------- |
-| P1-01 | **Shop-owner interview guide (Thai)** — Questions on daily sales, credit, stock, inspections, phones and LINE use.                                       | Claude  | 5 Nov 2026  |
-| P1-02 | **Interview 15–20 farm-input shop owners** — In one candidate pilot province; record pains, tools used, willingness to pilot.                            | Anthony | 25 Nov 2026 |
-| P1-03 | **Interview 5 input companies on data demand** — Agrochemical, seed and fertiliser firms: what sell-out data they lack and would pay for.                | Anthony | 25 Nov 2026 |
-| P1-04 | **Ask the Department of Agriculture about registration data** — Claude drafts the letter; ask for access or a data partnership for the product registry. | Both    | 15 Nov 2026 |
-| P1-05 | **Competitor and substitute scan** — Distributor apps, generic POS, Excel and paper; confirm the gap still holds.                                        | Claude  | 10 Nov 2026 |
-| P1-06 | **Clickable prototype tested with 5 shop owners** — Sale, stock and credit screens in Thai; watch them use it.                                           | Both    | 28 Nov 2026 |
-| P1-07 | **Choose the pilot province** — Based on interviews, shop density and travel access.                                                                     | Both    | 28 Nov 2026 |
-| P1-08 | **Go / no-go decision and MVP scope lock** — Written decision against the phase exit criteria.                                                           | Anthony | 30 Nov 2026 |
-
 ## P2 — MVP build
 
-_1 Dec 2026 – 28 Feb 2027._ Offline point of sale with stock and farmer credit, synced to the server.
+_1 Nov 2026 – 28 Feb 2027._ Offline point of sale with stock and farmer credit, synced to the server.
 
 **Done when:** A shop can sell offline, track stock and credit, print or LINE a receipt, and sync without losses, tested on a low-end Android phone.
 
@@ -91,13 +76,14 @@ _1 Mar 2027 – 31 Mar 2027._ The legality check that gives shops a reason to sw
 
 **Done when:** Every fertiliser, pesticide and seed sale is checked against Department of Agriculture registrations, with an inspection-ready sales record.
 
-| ID    | Deliverable                                                                                      | Owner   | Due         |
-| ----- | ------------------------------------------------------------------------------------------------ | ------- | ----------- |
-| P3-01 | **Registration catalogue import** — Load DOA product registrations and keep them updated.        | Claude  | 10 Mar 2027 |
-| P3-02 | **Legality check at the till** — Warn or block unregistered, expired or banned products.         | Claude  | 20 Mar 2027 |
-| P3-03 | **Hazardous-substance sales record** — Inspection-ready report of regulated product sales.       | Claude  | 25 Mar 2027 |
-| P3-04 | **Expiry tracking and alerts** — Batch expiry dates and reminders before stock goes out of date. | Claude  | 25 Mar 2027 |
-| P3-05 | **Expert review of compliance rules** — Check the rules with an agronomist or DOA contact.       | Anthony | 31 Mar 2027 |
+| ID    | Deliverable                                                                                                                                                            | Owner   | Due         |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------- |
+| P3-06 | **Get access to Department of Agriculture registration data** — Ask DOA for the product registry or a data partnership; Claude drafts the letter. Needed before P3-01. | Both    | 15 Feb 2027 |
+| P3-01 | **Registration catalogue import** — Load DOA product registrations and keep them updated.                                                                              | Claude  | 10 Mar 2027 |
+| P3-02 | **Legality check at the till** — Warn or block unregistered, expired or banned products.                                                                               | Claude  | 20 Mar 2027 |
+| P3-03 | **Hazardous-substance sales record** — Inspection-ready report of regulated product sales.                                                                             | Claude  | 25 Mar 2027 |
+| P3-04 | **Expiry tracking and alerts** — Batch expiry dates and reminders before stock goes out of date.                                                                       | Claude  | 25 Mar 2027 |
+| P3-05 | **Expert review of compliance rules** — Check the rules with an agronomist or DOA contact.                                                                             | Anthony | 31 Mar 2027 |
 
 ## P4 — Pilot
 
@@ -107,6 +93,7 @@ _1 Apr 2027 – 30 Jun 2027._ Run Puiya in 20 to 50 real shops in one province.
 
 | ID    | Deliverable                                                                                                        | Owner   | Due         |
 | ----- | ------------------------------------------------------------------------------------------------------------------ | ------- | ----------- |
+| P4-09 | **Choose the pilot province** — Based on shop density, travel access and contacts.                                 | Anthony | 15 Mar 2027 |
 | P4-01 | **Privacy notice and consent flow (PDPA)** — Thai notice, recorded consent, data-subject requests process.         | Both    | 5 Apr 2027  |
 | P4-02 | **Production environment** — Backups, monitoring, Sentry with personal data scrubbed.                              | Claude  | 5 Apr 2027  |
 | P4-03 | **Play Store closed-testing release** — Signed build on the closed testing track; release v0.1.0 from dev to main. | Both    | 10 Apr 2027 |
