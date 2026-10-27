@@ -1,0 +1,57 @@
+name: Deploy
+
+# Deploys the staging backend after every merge into dev. GitHub gets short-lived AWS
+# credentials through OIDC (no stored keys); see docs/aws-setup.md for the one-time setup.
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # lets the job request an OIDC token for AWS
+  contents: read
+
+jobs:
+  staging:
+    # Skipped until the owner has finished docs/aws-setup.md and set the repo variable.
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-southeast-1
+
+      - name: Deploy PuiyaStaging
+        working-directory: infra
+        env:
+          CDK_DISABLE_VERSION_CHECK: "1"
+        run: >
+          pnpm exec cdk deploy PuiyaStaging
+          --require-approval never
+          --no-notices
+          --outputs-file cdk-outputs.json
+
+      - name: Check the health endpoint
+        working-directory: infra
+        run: |
+          url=$(node -e "console.log(require('./cdk-outputs.json').PuiyaStaging.HealthUrl)")
+          echo "Health URL: $url"
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$url"
