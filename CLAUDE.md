@@ -49,7 +49,7 @@ apps/mobile      React Native (Expo) shop app — Android-first, offline-first
 apps/web         Next.js dashboard — owners, distributors, data buyers
 apps/api         Lambda handlers (TypeScript): API and offline sync, on DynamoDB (ADR 0003)
 packages/shared  Zod schemas, types, Thai formatting helpers — used by every app
-packages/ui      Design tokens shared by mobile (NativeWind) and web (Tailwind)
+packages/ui      Design tokens (colours, spacing, type, tap sizes) used through StyleSheet
 docs/adr         Architecture decision records
 infra            AWS CDK (TypeScript): one stack per stage, staging and prod
 ```
@@ -99,6 +99,8 @@ feat/… fix/… chore/… docs/… refactor/… test/…   ← always cut from 
 - Thai first. All user-facing text goes through i18n; nothing hard-coded. English is secondary.
   Mark new Thai strings for owner review in the PR.
 - Body text ≥ 18px, tap targets ≥ 48dp, high contrast, icons always paired with labels.
+- Style with React Native `StyleSheet` and the tokens in `@puiya/ui` only; no hard-coded colours
+  or sizes, and no NativeWind (decided in P2-01).
 - Dates in the Buddhist era (พ.ศ.) and money in baht via the helpers in `packages/shared` only.
 - Always show sync status (synced / pending / offline). A sale must never look lost.
 - Test on a low-end Android device or emulator (2–3 GB RAM class), not only flagships.
