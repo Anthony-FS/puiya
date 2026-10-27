@@ -66,7 +66,7 @@ _1 Nov 2026 – 28 Feb 2027._ Offline point of sale with stock and farmer credit
 | P2-08 | **Stock in and out** — Receiving, adjustments, low-stock alerts.                                                                                                        | Claude  | 10 Feb 2027 |
 | P2-09 | **Farmer credit ledger** — Balances, repayments, harvest-time reminders.                                                                                                | Claude  | 15 Feb 2027 |
 | P2-10 | **Receipts** — Bluetooth thermal printing and receipts sent over LINE.                                                                                                  | Claude  | 20 Feb 2027 |
-| P2-11 | **Staging environment** — AWS CDK staging stack in ap-southeast-7, deployed from dev by CI; synthetic data only.                                                        | Claude  | 31 Jan 2027 |
+| P2-11 | **Staging environment** — AWS CDK staging stack in ap-southeast-1 (Singapore), deployed from dev by CI; synthetic data only.                                            | Claude  | 31 Jan 2027 |
 | P2-12 | **Thai copy review and approval** — All app wording reviewed by Anthony.                                                                                                | Anthony | 25 Feb 2027 |
 | P2-13 | **Low-end Android and offline test pass** — Maestro end-to-end tests; manual test on a 2–3 GB RAM phone.                                                                | Both    | 28 Feb 2027 |
 
