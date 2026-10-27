@@ -1,6 +1,6 @@
 # 2. Initial technology stack
 
-- Status: accepted
+- Status: accepted; offline sync, API, database, auth, hosting and payments superseded by ADR 0003
 - Date: 2026-10-27
 
 ## Context

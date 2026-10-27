@@ -36,7 +36,7 @@ PR merges into `dev`.
 ## Always stop and ask before
 
 - Adding a new dependency (name it, say why, and what it replaces).
-- A migration that drops, renames or rewrites data.
+- A data model change that drops, renames or rewrites stored data.
 - Changing authentication, payments, or anything that stores personal data.
 - Changing product-registration catalogue logic (the legality check at the till).
 - Anything that cannot be undone (force pushes, deleting branches with unmerged work, prod data).
@@ -47,11 +47,11 @@ PR merges into `dev`.
 ```
 apps/mobile      React Native (Expo) shop app — Android-first, offline-first
 apps/web         Next.js dashboard — owners, distributors, data buyers
-apps/api         Node.js API (Fastify) + PostgreSQL
+apps/api         Lambda handlers (TypeScript): API and offline sync, on DynamoDB (ADR 0003)
 packages/shared  Zod schemas, types, Thai formatting helpers — used by every app
 packages/ui      Design tokens shared by mobile (NativeWind) and web (Tailwind)
 docs/adr         Architecture decision records
-infra            Infrastructure as code
+infra            AWS CDK (TypeScript): one stack per stage, staging and prod
 ```
 
 Feature code lives together: `src/features/<feature>/` holds its screens, logic and tests.
@@ -79,8 +79,10 @@ feat/… fix/… chore/… docs/… refactor/… test/…   ← always cut from 
 - Commits follow Conventional Commits with a scope: `feat(mobile): add barcode scan to checkout`.
   Scopes: `mobile`, `web`, `api`, `shared`, `ui`, `infra`, `docs`, `deps`, `ci`, `repo`.
 - Keep PRs under ~400 changed lines (excluding lockfiles and generated code). Split bigger work.
-- Migrations are forward-only. Never edit a merged migration; add a new one.
+- Data model changes are additive: add fields or tables, never repurpose or delete them in place.
 - Secrets never enter git. Add new variables to `.env.example` with a dummy value.
+- Stay inside the AWS always-free allowances in ADR 0003. Anything that would cost money is a
+  stop-and-ask.
 
 ## Code style
 
@@ -115,7 +117,8 @@ A change is done when:
 
 - Development and staging use synthetic data only. Real farmer or shop data never leaves production.
 - No personal data (names, phone numbers, ID numbers, addresses) in logs, analytics or error reports.
-- Personal data lives in a separate schema with row-level security; each shop sees only its own rows.
+- Personal data lives in its own DynamoDB table, reachable only through the API and always scoped
+  to the signed-in user's shop. Access rules are code, so they need tests.
 - Record consent explicitly (what, when, version of the notice).
 - Anything exported for data buyers is aggregated and must meet the minimum group size
   (no figure built from fewer than 5 shops).
