@@ -16,11 +16,11 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.3",
+    "@biomejs/biome": "2.6.7",
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "lefthook": "2.2.2",
-    "turbo": "2.11.10",
+    "turbo": "2.11.11",
     "typescript": "7.0.2"
   }
 }
